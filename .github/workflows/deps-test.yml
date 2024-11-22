@@ -52,7 +52,7 @@ jobs:
       - name: Build compat version
         run: |
           mkdir -p ${{ env.BUILD_DIR }}
-          emcmake cmake --trace-expand -B ${{ env.BUILD_DIR }} -S megasource -DCMAKE_BUILD_TYPE=Release -DLOVE_JIT=0 -DLOVEJS_COMPAT=1 -DSEXPORT_ALL=1 -DSMAIN_MODULE=1 -DSERROR_ON_UNDEFINED_SYMBOLS=0
+          emcmake cmake --debug-output -B ${{ env.BUILD_DIR }} -S megasource -DCMAKE_BUILD_TYPE=Release -DLOVE_JIT=0 -DLOVEJS_COMPAT=1 -DSEXPORT_ALL=1 -DSMAIN_MODULE=1 -DSERROR_ON_UNDEFINED_SYMBOLS=0
           emmake make -C ${{ env.BUILD_DIR }} -j
       - name: Copy files
         run: |
