@@ -27,3 +27,43 @@ jobs:
     - name: Install
       shell: cmd
       run: cmake --build build --config Release --target install -j2
+  wasm:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_DIR: build
+      EMSDK_VERSION: latest
+      EMSDK_CACHE_DIR: emsdk-cache
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: megasource
+      - name: Checkout LÖVE
+        uses: actions/checkout@v4
+        with:
+          path: megasource/libs/love
+          repository: 26F-Studio/love
+          ref: main
+      - name: Setup Emscripten toolchain
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: ${{ env.EMSDK_VERSION }}
+          actions-cache-folder: ${{ env.EMSDK_CACHE_DIR }}
+      - name: Build compat version
+        run: |
+          mkdir -p ${{ env.BUILD_DIR }}
+          emcmake cmake --trace-expand -B ${{ env.BUILD_DIR }} -S megasource -DCMAKE_BUILD_TYPE=Release -DLOVE_JIT=0 -DLOVEJS_COMPAT=1 -DSEXPORT_ALL=1 -DSMAIN_MODULE=1 -DSERROR_ON_UNDEFINED_SYMBOLS=0
+          emmake make -C ${{ env.BUILD_DIR }} -j
+      - name: Copy files
+        run: |
+          ls ${{ env.BUILD_DIR }}/love
+          cp ${{ env.BUILD_DIR }}/love/love.js src/compat/
+          cp ${{ env.BUILD_DIR }}/love/love.wasm src/compat/
+      - name: Pack files
+        run: |
+          7z a -tzip build.zip ${{ env.BUILD_DIR }}/love/love.js ${{ env.BUILD_DIR }}/love/love.wasm
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Love.js_Compatible
+          path: build.zip
