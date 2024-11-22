@@ -9,13 +9,20 @@ set(OGG_SRC
 	src/bitwise.c
 	src/framing.c
 )
+set(OGG_INCLUDES
+	include
+)
+
+if (EMSCRIPTEN)
+	set(OGG_INCLUDES ${OGG_INCLUDES} emscripten/include)
+endif ()
 
 if(OGG_BUILD_STATIC)
 	add_library(ogg-static STATIC ${OGG_SRC})
-	target_include_directories(ogg-static PUBLIC include)
+	target_include_directories(ogg-static PUBLIC ${OGG_INCLUDES})
 endif()
 
 if(OGG_BUILD_SHARED)
 	add_library(ogg SHARED ${OGG_SRC} win32/ogg.def)
-	target_include_directories(ogg PUBLIC include)
+	target_include_directories(ogg PUBLIC ${OGG_INCLUDES})
 endif()
