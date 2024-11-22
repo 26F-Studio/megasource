@@ -2,6 +2,7 @@
 #define HAVE_AL_AL_H
 #define HAVE_ARPA_INET_H
 #define HAVE_ATOLL
+#define HAVE_DIRENT_H
 #define HAVE_DLFCN_H
 #define HAVE_GETADDRINFO
 #define HAVE_GETPAGESIZE
